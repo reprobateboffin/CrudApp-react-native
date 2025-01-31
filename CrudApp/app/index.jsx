@@ -1,7 +1,9 @@
-import { Text, View,TextInput,Pressable ,StyleSheet} from "react-native";
+import { Text, View,TextInput,Pressable ,StyleSheet, FlatList} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import {data} from '@/data/todos.js'
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 export default function Index() {
   const [todos, setTodos] = useState(data.sort((a,b)=> b.id - a.id))
   const [text,setText] = useState('');
@@ -26,10 +28,22 @@ export default function Index() {
     const removeTodo = (id)=>{
 
        setTodos(todos.filter(todo => todo.id !== id))
-
-
-
     }
+
+    const renderItem = ({item})=>(
+      <View style={styles.todoItem}>
+        <Text style={[styles.todoText, item.completed && styles.completedText]}
+        onPress={()=> toggleTodo(item.id)}
+        >
+          {item.title}</Text>
+        <Pressable onPress={()=> removeTodo(item.id)}>
+        <AntDesign name="delete" size={36} color="red"  selectable={undefined}/>
+        </Pressable>
+
+
+      </View>
+    )
+
   return (
    <SafeAreaView style={styles.container}>
 
@@ -50,6 +64,15 @@ onChangeText={setText}
 </Pressable>
 
 </View>
+
+<FlatList
+    data ={todos}
+    renderItem={renderItem}
+    keyExtractor={todo=>todo.id}
+    contentContainerStyle={{flexGrow:1}}
+
+
+/>
 
   </SafeAreaView>
   );
@@ -94,5 +117,25 @@ addButtonText: {
   fontSize: 18,
   color: 'black',
 },
-
+todoItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding:10,
+  borderBottomColor: 'gray',
+  borderBottomWidth:1,
+  width: '100%',
+  maxWidth: 1024,
+  marginHorizontal: 'auto',
+  pointerEvents: 'auto',
+},
+todoText:{
+  flex:1,
+  fontSize : 18,
+  color: 'white',
+},
+completedText:{
+textDecorationLine: 'line-through',
+color: 'gray'
+},
 })
